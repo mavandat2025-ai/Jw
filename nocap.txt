@@ -1,44 +1,85 @@
--- Menu
-local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
-local Frame = Instance.new("Frame", ScreenGui)
-local Button = Instance.new("TextButton", Frame)
+-- MENU
+local player = game.Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
 
-Frame.Size = UDim2.new(0,200,0,120)
-Frame.Position = UDim2.new(0.05,0,0.3,0)
-Frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
-Frame.Active = true
-Frame.Draggable = true
+local gui = Instance.new("ScreenGui", game.CoreGui)
+local frame = Instance.new("Frame", gui)
+local gomBtn = Instance.new("TextButton", frame)
+local spinBtn = Instance.new("TextButton", frame)
 
-Button.Size = UDim2.new(0,180,0,50)
-Button.Position = UDim2.new(0,10,0,30)
-Button.Text = "Auto Gom Quái : OFF"
-Button.BackgroundColor3 = Color3.fromRGB(0,170,255)
+frame.Size = UDim2.new(0,200,0,150)
+frame.Position = UDim2.new(0.05,0,0.3,0)
+frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
+frame.Active = true
+frame.Draggable = true
 
-local auto = false
+-- NÚT GOM QUÁI
+gomBtn.Size = UDim2.new(0,180,0,50)
+gomBtn.Position = UDim2.new(0,10,0,20)
+gomBtn.Text = "Auto Gom Quest : OFF"
+gomBtn.BackgroundColor3 = Color3.fromRGB(0,170,255)
 
-Button.MouseButton1Click:Connect(function()
-    auto = not auto
-    Button.Text = auto and "Auto Gom Quái : ON" or "Auto Gom Quái : OFF"
+-- NÚT SPINBOT
+spinBtn.Size = UDim2.new(0,180,0,50)
+spinBtn.Position = UDim2.new(0,10,0,80)
+spinBtn.Text = "Spinbot : OFF"
+spinBtn.BackgroundColor3 = Color3.fromRGB(255,170,0)
+
+local autoMob = false
+local spin = false
+
+gomBtn.MouseButton1Click:Connect(function()
+autoMob = not autoMob
+gomBtn.Text = autoMob and "Auto Gom Quest : ON" or "Auto Gom Quest : OFF"
 end)
 
--- Auto Gom 4 Quái
+spinBtn.MouseButton1Click:Connect(function()
+spin = not spin
+spinBtn.Text = spin and "Spinbot : ON" or "Spinbot : OFF"
+end)
+
+-- AUTO GOM QUÁI QUEST
 spawn(function()
-while task.wait(0.3) do
-    if auto then
-        local enemies = {}
-        
-        for _,v in pairs(game.Workspace.Enemies:GetChildren()) do
-            if v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") then
-                if v.Humanoid.Health > 0 then
-                    table.insert(enemies,v)
-                end
-            end
-        end
-        
-        for i = 1, math.min(4,#enemies) do
-            enemies[i].HumanoidRootPart.CFrame =
-            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0,0,-5)
-        end
-    end
+while task.wait(0.2) do
+if autoMob then
+
+local quest = player.PlayerGui.Main.Quest
+
+if quest.Visible then
+local questText = quest.Container.QuestTitle.Title.Text
+local count = 0
+
+for _,enemy in pairs(game.Workspace.Enemies:GetChildren()) do
+if enemy:FindFirstChild("HumanoidRootPart") and enemy:FindFirstChild("Humanoid") then
+if enemy.Humanoid.Health > 0 then
+
+if string.find(questText, enemy.Name) then
+
+enemy.HumanoidRootPart.CFrame =
+player.Character.HumanoidRootPart.CFrame * CFrame.new(0,0,-6)
+
+count = count + 1
+
+if count >= 4 then
+break
+end
+
+end
+end
+end
+end
+
+end
+end
+end
+end)
+
+-- SPINBOT XOAY NHÂN VẬT
+spawn(function()
+while task.wait() do
+if spin and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+player.Character.HumanoidRootPart.CFrame =
+player.Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(40), 0)
+end
 end
 end)
